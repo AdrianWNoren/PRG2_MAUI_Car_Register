@@ -1,6 +1,6 @@
-﻿namespace PRG_MAUI_Car_Register
+﻿namespace PRG_MAUI_Car_Register.veiwmodel.Model
 {
-    class Vehicle
+abstract class Vehicle
     {
         // Medlemsvariabler
         public enum Type { Bil, MC, Lastbil };
@@ -80,7 +80,7 @@
                     throw new ArgumentException("Årsmodellen ska skrivas med 2 eller 4 siffror. Ex: 1989 eller 89");
                 }
 
-                    this.yearmodel = value;
+                    yearmodel = value;
             }
         }
 
@@ -112,13 +112,13 @@
             
 
 
-                this.manufacturer = value.ToUpper();
+                manufacturer = value.ToUpper();
             }
         }
         public Type VehicleType
         {
             get { return vehicleType; }
-            set { this.vehicleType = value; }
+            set { vehicleType = value; }
         }
 
 
@@ -143,7 +143,7 @@
 
                 }
 
-                this.model = value; }
+                model = value; }
         }
 
       
@@ -152,12 +152,12 @@
 
 
 
-        // Klassens  eventuella övriga metoder brukar finnas här, här en override av ToString()
+        // Klassens  eventuella övriga metoder brukar finnas här, här en override av ToString(). And gärna RegEx.Match()
 
         //TODO Modifiera overriden på ToString() så att allt visas som önskat i UIs listBox
         public override string ToString()
         {
-            return this.registrationNumber + "\t" + this.vehicleType + "\t" + this.manufacturer + "\t" + this.model;
+            return registrationNumber + "\t" + vehicleType + "\t" + manufacturer + "\t" + model;
         }
     }
 }

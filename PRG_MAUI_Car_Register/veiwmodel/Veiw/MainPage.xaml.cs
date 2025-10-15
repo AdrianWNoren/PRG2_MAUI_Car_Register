@@ -1,4 +1,6 @@
-﻿namespace PRG_MAUI_Car_Register
+﻿using PRG_MAUI_Car_Register.veiwmodel.Model;
+
+namespace PRG_MAUI_Car_Register
 {
     public partial class MainPage : ContentPage
     {
@@ -14,8 +16,24 @@
         {
             try
             {
-                Vehicle vehicle = new Vehicle((Vehicle.Type)pickerType.SelectedIndex);
+                Vehicle vehicle;
+                var selectedType = (Vehicle.Type)pickerType.SelectedIndex;
 
+
+                switch (selectedType)
+                {
+                    case Vehicle.Type.Bil:
+                        vehicle = new Car(selectedType); 
+                        break;
+                    case Vehicle.Type.MC:
+                        vehicle = new Motorcycle(selectedType); 
+                        break;
+                    case Vehicle.Type.Lastbil:
+                        vehicle = new Truck(selectedType); 
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid vehicle type");
+                }
                 string regNr = entryRegistrationNumber.Text;
                 vehicle.RegistrationNumber = regNr;
                 vehicle.Manufacturer = entryManufacturer.Text;
