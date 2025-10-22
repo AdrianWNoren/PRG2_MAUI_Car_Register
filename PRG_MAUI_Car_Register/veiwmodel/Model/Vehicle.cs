@@ -1,4 +1,6 @@
-﻿namespace PRG_MAUI_Car_Register.veiwmodel.Model
+﻿using System.Text.RegularExpressions;
+
+namespace PRG_MAUI_Car_Register.veiwmodel.Model
 {
 abstract class Vehicle
     {
@@ -10,7 +12,7 @@ abstract class Vehicle
         private string model = string.Empty;
         private string yearmodel = string.Empty;
 
-        // Konstruktor (en metod med samma namn som klassen, som returnerar ett objekt)
+        // Konstruktor (en metod med samma namn som klassen, som  ett objekt)
         public Vehicle(Type vehicleType) // en konstruktor kan, men måste inte, ta parametrar
         {
             this.vehicleType = vehicleType;
@@ -55,32 +57,26 @@ abstract class Vehicle
         }
         public string Yearmodel
         {
-            get { return yearmodel; } 
+            get { return yearmodel; }
             set
             {
- 
-                if (string.IsNullOrWhiteSpace(value)){
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
                     throw new ArgumentException("Årsmodellen kan ej vara tom, detta fält måste fyllas i");
                 }
-                if (value.Any(char.IsLetter))
+                else if (!Regex.IsMatch(value, @"^\d{4}$"))
                 {
-                    throw new ArgumentException("Årsmodellen kan bara innehålla siffror");
-                }
-                if (value.Length >= 2)
-                {
-                    string firstTwo = value.Substring(0, 2);
-                    if (firstTwo != "18" && firstTwo != "19" && firstTwo != "20")
-                    {
-                        throw new ArgumentException("Årsmodellen måste vara från ett giltigt år, 1800, 1900 eller 2000-talet");
-                    }
+                    throw new ArgumentException("Årsmodellen ska bestå av fyra siffror, t.ex. 1989");
                 }
 
-                if(value.Length != 2 && value.Length != 4)
+                int year = int.Parse(value);
+                if (year < 1886 || year > DateTime.Now.Year)
                 {
-                    throw new ArgumentException("Årsmodellen ska skrivas med 2 eller 4 siffror. Ex: 1989 eller 89");
+                    throw new ArgumentException("Årsmodellen måste vara mellan 1886 och innevarande år");
                 }
 
-                    yearmodel = value;
+                yearmodel = value;
             }
         }
 
