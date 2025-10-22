@@ -13,7 +13,7 @@ abstract class Vehicle
         private string yearmodel = string.Empty;
 
         // Konstruktor (en metod med samma namn som klassen, som  ett objekt)
-        public Vehicle(Type vehicleType) // en konstruktor kan, men måste inte, ta parametrar
+        public Vehicle(Type vehicleType) // en konstruktor kan, men måste inten  , ta parametrar
         {
             this.vehicleType = vehicleType;
         }
