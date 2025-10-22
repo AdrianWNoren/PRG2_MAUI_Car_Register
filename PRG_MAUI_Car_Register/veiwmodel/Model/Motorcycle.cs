@@ -20,14 +20,15 @@ namespace PRG_MAUI_Car_Register.veiwmodel.Model
             get { return category; }
             set
             {
-                if (!string.IsNullOrEmpty(value) && value.Any(char.IsDigit))
+                if (string.IsNullOrEmpty(value) || value.Any(char.IsDigit))
                 {
-                    category = value.ToUpper();
+                    throw new ArgumentException("Kategorin kan ej vara tom och kan ej inneålla siffor");
+
 
                 }
                 else
                 {
-                    throw new ArgumentException("Kategorin kan ej vara tom och kan ej inneålla siffor");
+                    category = value.ToUpper();
                 }
 
             }
