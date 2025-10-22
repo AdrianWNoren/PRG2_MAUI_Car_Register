@@ -153,7 +153,7 @@ abstract class Vehicle
         //TODO Modifiera overriden på ToString() så att allt visas som önskat i UIs listBox
         public override string ToString()
         {
-            return registrationNumber + "\t" + vehicleType + "\t" + manufacturer + "\t" + model;
+            return registrationNumber + "\t" + yearmodel + "\t" + vehicleType + "\t" + manufacturer + "\t" + model;
         }
     }
 }
