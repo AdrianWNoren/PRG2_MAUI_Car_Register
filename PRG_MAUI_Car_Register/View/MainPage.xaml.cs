@@ -34,25 +34,24 @@ namespace PRG_MAUI_Car_Register
                     default:
                         throw new ArgumentException("Invalid vehicle type");
                 }
-                string regNr = entryRegistrationNumber.Text;
-                vehicle.RegistrationNumber = regNr;
-                vehicle.Manufacturer = entryManufacturer.Text;
-                vehicle.Model = entryModel.Text;
-                vehicle.Yearmodel = entryYear.Text;
 
-                vehicleList.Add(vehicle);
-                listViewVehicles.ItemsSource = null;
-                listViewVehicles.ItemsSource = vehicleList;
-
-                entryRegistrationNumber.Text = string.Empty;
-                entryManufacturer.Text = string.Empty;
-                entryModel.Text = string.Empty;
-                entryYear.Text = string.Empty; 
+                AddVehicleToList(vehicle);
             }
             catch (ArgumentException ex)
             {
                 DisplayAlert("Fel", ex.Message, "OK");
             }
+        }
+        private void AddVehicleToList(Vehicle vehicle)
+        {
+            vehicleList.Add(vehicle);
+            listViewVehicles.ItemsSource = null;
+            listViewVehicles.ItemsSource = vehicleList;
+
+            entryRegistrationNumber.Text = string.Empty;
+            entryManufacturer.Text = string.Empty;
+            entryModel.Text = string.Empty;
+            entryYear.Text = string.Empty;
         }
 
 
