@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRG_MAUI_Car_Register.veiwmodel.Model
+namespace PRG_MAUI_Car_Register.Model
 {
 
     internal class Motorcycle : Vehicle

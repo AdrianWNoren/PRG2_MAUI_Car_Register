@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PRG_MAUI_Car_Register.veiwmodel.Model
+namespace PRG_MAUI_Car_Register.Model
 {
 abstract class Vehicle
     {
