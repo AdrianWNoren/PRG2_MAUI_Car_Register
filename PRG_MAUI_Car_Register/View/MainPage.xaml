@@ -1,51 +1,105 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PRG_MAUI_Car_Register.MainPage">
+             xmlns:viewmodel="clr-namespace:PRG_MAUI_Car_Register.ViewModel"
+             xmlns:converters="clr-namespace:PRG_MAUI_Car_Register.Converters"
+             x:Class="PRG_MAUI_Car_Register.MainPage"
+             Title="Lägg till fordon">
+
+    <ContentPage.Resources>
+        <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
+    </ContentPage.Resources>
+
+    <ContentPage.BindingContext>
+        <viewmodel:MainPageViewModel />
+    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10">
             <Image Source="car.jpg" Aspect="AspectFit" HeightRequest="150" Margin="0,0,0,20"/>
-            
+
             <HorizontalStackLayout Spacing="20" HorizontalOptions="StartAndExpand">
-                <Entry x:Name="entryRegistrationNumber" Placeholder="Registreringsnummer" />
+                <Entry Placeholder="Registreringsnummer" 
+                       Text="{Binding RegistrationNumber}"
+                       WidthRequest="200" />
                 <Label Text="Välj typ:" VerticalOptions="Center"/>
-                <Picker x:Name="pickerType" TextColor="DarkRed">
-                <Picker.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Bil</x:String>
-                        <x:String>MC</x:String>
-                        <x:String>Lastbil</x:String>
-                    </x:Array>
-                </Picker.ItemsSource>
-            </Picker>
-            </HorizontalStackLayout>
-            <Entry x:Name="entryManufacturer" Placeholder="Tillverkare" />
-            <Entry x:Name="entryModel" Placeholder="Modell" />
-            <Entry x:Name="entryYear" Placeholder="Årsmodell" />
-            <Button x:Name="buttonRegister" Text="Registrera" Clicked="OnRegisterClicked" Margin="0,0,0,20" BackgroundColor="DarkRed"/>
-
-            <Label Text="Kategori:" FontAttributes="Bold" />
-            <HorizontalStackLayout HorizontalOptions="Center" Margin="0,0,0,20" Spacing="10" >
-                <RadioButton x:Name="radioAll" Content="Alla" IsChecked="True" CheckedChanged="OnRadioCheckedChanged" />
-                <RadioButton x:Name="radioCar" Content="Bilar" CheckedChanged="OnRadioCheckedChanged" />
-                <RadioButton x:Name="radioMC" Content="MC" CheckedChanged="OnRadioCheckedChanged" />
-                <RadioButton x:Name="radioTruck" Content="Lastbil" CheckedChanged="OnRadioCheckedChanged" />
-            </HorizontalStackLayout>
-            <HorizontalStackLayout  HorizontalOptions="Start" Margin="0,0,0,5" Spacing="5" >
-                <Label TranslationY="-40" Text="Visa lista:"></Label>
-                <CheckBox TranslationY="-50"   IsChecked="True" x:Name="checkBoxList" CheckedChanged="OnShowListChecked"></CheckBox>
+                <Picker SelectedIndex="{Binding SelectedType}"
+                        TextColor="DarkRed"
+                        WidthRequest="120">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Bil</x:String>
+                            <x:String>MC</x:String>
+                            <x:String>Lastbil</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
             </HorizontalStackLayout>
 
-            <ListView TranslationY="-30" x:Name="listViewVehicles" Margin="0,0,0,20" BackgroundColor="#a1a1a1" HorizontalOptions="Start" WidthRequest="350"  />
+            <Entry Placeholder="Tillverkare" 
+                   Text="{Binding Manufacturer}" />
+            <Entry Placeholder="Modell" 
+                   Text="{Binding Model}" />
 
+            <Entry Placeholder="Årsmodell" 
+                   Text="{Binding YearModel}"
+                   Keyboard="Numeric" />
+
+
+            <Button Text="Registrera fordon" 
+                    Command="{Binding RegisterCommand}" 
+                    Margin="0,0,0,20" 
+                    BackgroundColor="DarkRed"
+                    TextColor="White"/>
+
+            <Label Text="Filtrera fordon:" FontAttributes="Bold" />
+            <HorizontalStackLayout HorizontalOptions="Center" Margin="0,0,0,20" Spacing="10">
+                <RadioButton Content="Alla" 
+                           IsChecked="{Binding SelectedFilter, Converter={StaticResource StringToBoolConverter}, ConverterParameter=All}"
+                           GroupName="Filter" />
+                <RadioButton Content="Bilar" 
+                           IsChecked="{Binding SelectedFilter, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Cars}"
+                           GroupName="Filter" />
+                <RadioButton Content="MC" 
+                           IsChecked="{Binding SelectedFilter, Converter={StaticResource StringToBoolConverter}, ConverterParameter=MC}"
+                           GroupName="Filter" />
+                <RadioButton Content="Lastbilar" 
+                           IsChecked="{Binding SelectedFilter, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Trucks}"
+                           GroupName="Filter" />
+            </HorizontalStackLayout>
+            <Label Text="Registrerade fordon:" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding FilteredVehicles}" 
+                          HeightRequest="200"
+                          Margin="0,0,0,20">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" ColumnDefinitions="100,80,100,100,80">
+                            <Label Text="{Binding RegistrationNumber}" Grid.Column="0" />
+                            <Label Text="{Binding VehicleType}" Grid.Column="1" />
+                            <Label Text="{Binding Manufacturer}" Grid.Column="2" />
+                            <Label Text="{Binding Model}" Grid.Column="3" />
+                            <Label Text="{Binding YearModel}" Grid.Column="4" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+     
+            <Label Text="Sök fordon:" FontAttributes="Bold" />
             <HorizontalStackLayout HorizontalOptions="FillAndExpand" Spacing="20">
-
-                <Entry x:Name="entrySearchRegistrationNumber" HorizontalOptions="FillAndExpand" Placeholder="Sök på registreringsnummer"></Entry>
-                <Button x:Name="SearchButton" Text="Sök" HorizontalOptions="End" BackgroundColor="DarkRed" TextColor="White" Clicked="OnSearchClicked"/>
+                <Entry Placeholder="Ange registreringsnummer" 
+                       Text="{Binding SearchRegistrationNumber}"
+                       HorizontalOptions="FillAndExpand" />
+                <Button Text="Sök" 
+                        Command="{Binding SearchCommand}"
+                        HorizontalOptions="End" 
+                        BackgroundColor="DarkRed" 
+                        TextColor="White"/>
             </HorizontalStackLayout>
-            <Label x:Name="labelSearchResult" Text="Sökresultat visas här..." TextColor="DarkRed" Margin="0,20,0,0"/>
+
+            <Label Text="{Binding SearchResult}" 
+                   TextColor="DarkRed" 
+                   Margin="0,20,0,0"/>
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

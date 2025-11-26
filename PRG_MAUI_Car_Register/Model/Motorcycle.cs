@@ -1,41 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PRG_MAUI_Car_Register.veiwmodel.Model
+﻿namespace PRG_MAUI_Car_Register
 {
-
-    internal class Motorcycle : Vehicle
+    public class Motorcycle : Vehicle
     {
-
-
-        private string category;
-        public Motorcycle(Type vehicleType) : base(vehicleType)
+        public Motorcycle() : base(Vehicle.Type.MC)
         {
         }
-        public string Category
-        {
-            get { return category; }
-            set
-            {
-                if (string.IsNullOrEmpty(value) || value.Any(char.IsDigit))
-                {
-                    throw new ArgumentException("Kategorin kan ej vara tom och kan ej inneålla siffor");
-
-
-                }
-                else
-                {
-                    category = value.ToUpper();
-                }
-
-            }
-
-
-
-        }
-
     }
 }

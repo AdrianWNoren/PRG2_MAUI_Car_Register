@@ -1,159 +1,169 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace PRG_MAUI_Car_Register.veiwmodel.Model
+namespace PRG_MAUI_Car_Register
 {
-abstract class Vehicle
+    public class Vehicle
     {
-        // Medlemsvariabler
+
         public enum Type { Bil, MC, Lastbil };
         private Type vehicleType;
         private string registrationNumber = string.Empty;
         private string manufacturer = string.Empty;
         private string model = string.Empty;
-        private string yearmodel = string.Empty;
+        private string yearModel = string.Empty;
 
-        // Konstruktor (en metod med samma namn som klassen, som  ett objekt)
-        public Vehicle(Type vehicleType) // en konstruktor kan, men måste inten  , ta parametrar
+
+        public Vehicle(Type vehicleType)
         {
             this.vehicleType = vehicleType;
         }
 
-        // Get-Set för att hålla variablerna privata, och för att validera inkommande värden från UI (user interface, användargränssnittet)
+        public virtual Type VehicleType
+        {
+            get { return vehicleType; }
+            set { this.vehicleType = value; }
+        }
+
         public string RegistrationNumber
         {
             get { return registrationNumber; }
-
             set
             {
-                if (value.Length == 6)
+                if (!String.IsNullOrWhiteSpace(value))
                 {
-                    for (int i = 0; i < 3; i++)
+                    if (value.Length == 6)
                     {
-                        if (!char.IsLetter(value[i]))
-                            throw new ArgumentException("Inkorret registreringsnummer: De första tre tecknen måste vara bokstäver.");
-                    }
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (!char.IsLetter(value[i]))
+                                throw new ArgumentException("Inkorrekt registreringsnummer: De första tre tecknen måste vara bokstäver.");
+                        }
 
-                    for (int i = 3; i < 6; i++)
+                        for (int i = 3; i < 6; i++)
+                        {
+                            if (i < 5)
+                            {
+                                if (!char.IsDigit(value[i]))
+                                    throw new ArgumentException("Inkorrekt registreringsnummer: Det fjärde och femte tecknet måste vara siffror.");
+                            }
+                            else
+                            {
+                                if (!char.IsDigit(value[i]) && !char.IsLetter(value[i]))
+                                    throw new ArgumentException("Inkorrekt registreringsnummer: Det sjätte tecknet måste vara en siffra eller en bokstav.");
+                            }
+                        }
+                    }
+                    else
                     {
-                        if (i < 5)
-                        {
-                            if (!char.IsDigit(value[i]))
-                                throw new ArgumentException("Inkorret registreringsnummer: Det fjärde och femte tecknet måste vara siffror.");
-                        }
-                        else
-                        {
-                            if (!char.IsDigit(value[i]) && !char.IsLetter(value[i]))
-                                throw new ArgumentException("Inkorret registreringsnummer: Det sjätte tecknet måste vara en siffra eller en bokstav.");
-                        }
+                        throw new ArgumentException("Ett registreringsnummer måste bestå av exakt 6 tecken.");
                     }
                 }
                 else
                 {
-                    throw new ArgumentException("Ett registreringsnummer måste bestå av exakt 6 tecken, med tre bokstäver följt av två siffror och en siffra eller bokstav.");
+                    throw new ArgumentException("Registreringsnummer får inte vara tomt.");
                 }
 
                 registrationNumber = value.ToUpper();
             }
         }
-        public string Yearmodel
-        {
-            get { return yearmodel; }
-            set
-            {
 
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentException("Årsmodellen kan ej vara tom, detta fält måste fyllas i");
-                }
-                else if (!Regex.IsMatch(value, @"^\d{4}$"))
-                {
-                    throw new ArgumentException("Årsmodellen ska bestå av fyra siffror, t.ex. 1989");
-                }
-
-                int year = int.Parse(value);
-                if (year < 1886 || year > DateTime.Now.Year)
-                {
-                    throw new ArgumentException("Årsmodellen måste vara mellan 1886 och innevarande år");
-                }
-
-                yearmodel = value;
-            }
-        }
-
-        // Fordonstyp tas in från dropdown-menyn, och behöver därför inte valideras
         public string Manufacturer
         {
             get { return manufacturer; }
-            set {
-
+            set
+            {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentException("Tillverkarnamnet kan ej vara tomt, detta fält måste fyllas i");
-
+                    throw new ArgumentException("Tillverkare får inte vara tomt.");
                 }
 
-                    
-                if (value.Any(char.IsDigit)){
-                    throw new ArgumentException("Tillverkarnamnet kan ej innehålla siffror");
-                }
-                string specialChar = @"\|!#$%&/()=?»«@£§€{}.-;'<>_,";
-                foreach (var item in specialChar)
+                if (value.Length < 2)
                 {
-                    if (value.Contains(item))
-                    {
-                        throw new ArgumentException("Tillverkarnamnet kan ej innehålla specialtecken");
-                    }
-
+                    throw new ArgumentException("Tillverkare måste vara minst 2 tecken långt.");
                 }
-            
+
+                if (value.Length > 50)
+                {
+                    throw new ArgumentException("Tillverkare får inte vara längre än 50 tecken.");
+                }
 
 
-                manufacturer = value.ToUpper();
+                if (!Regex.IsMatch(value, @"^[a-zA-ZåäöÅÄÖ\s]+$"))
+                {
+                    throw new ArgumentException("Tillverkare får bara innehålla bokstäver och mellanslag.");
+                }
+
+                string trimmedValue = value.Trim();
+                manufacturer = char.ToUpper(trimmedValue[0]) + trimmedValue.Substring(1).ToLower();
             }
         }
-        public Type VehicleType
-        {
-            get { return vehicleType; }
-            set { vehicleType = value; }
-        }
-
 
         public string Model
         {
             get { return model; }
-            set {
-                if(string.IsNullOrWhiteSpace(value))
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
                 {
-                  
-                  throw new ArgumentException("Modelnamnet kan ej vara tomt, detta fält måste fyllas i");
-
-                }
-                string specialChar = @"\|!#$%&/()=?»«@£§€{}.-;'<>_,";
-                foreach (var item in specialChar)
-                {
-                    if (value.Contains(item))
-                    {
-                        throw new ArgumentException("Modelnamnet" +
-                            " kan ej innehålla specialtecken");
-                    }
-
+                    throw new ArgumentException("Modell får inte vara tomt.");
                 }
 
-                model = value; }
+                if (value.Length < 1)
+                {
+                    throw new ArgumentException("Modell måste vara minst 1 tecken långt.");
+                }
+
+                if (value.Length > 50)
+                {
+                    throw new ArgumentException("Modell får inte vara längre än 50 tecken.");
+                }
+
+                if (!Regex.IsMatch(value, @"^[a-zA-ZåäöÅÄÖ0-9\s]+$"))
+                {
+                    throw new ArgumentException("Modell får bara innehålla bokstäver, siffror och mellanslag.");
+                }
+
+                model = value.Trim();
+            }
         }
 
-      
+        public string YearModel
+        {
+            get { return yearModel; }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentException("Årsmodell får inte vara tomt.");
+                }
 
+                if (!Regex.IsMatch(value, @"^(19[0-9]{2}|20[0-9]{2})$"))
+                {
+                    throw new ArgumentException("Årsmodell måste vara ett fyrsiffrigt år mellan 1900 och " + (DateTime.Now.Year + 1));
+                }
 
+                int year = int.Parse(value);
+                int currentYear = DateTime.Now.Year;
 
+                if (year < 1900 || year > currentYear + 1)
+                {
+                    throw new ArgumentException($"Årsmodell måste vara mellan 1900 och {currentYear + 1}.");
+                }
 
+                yearModel = value;
+            }
+        }
 
-        // Klassens  eventuella övriga metoder brukar finnas här, här en override av ToString(). And gärna RegEx.Match()
-
-        //TODO Modifiera overriden på ToString() så att allt visas som önskat i UIs listBox
         public override string ToString()
         {
-            return registrationNumber + "\t" + yearmodel + "\t" + vehicleType + "\t" + manufacturer + "\t" + model;
+            string yearDisplay = string.IsNullOrEmpty(yearModel) ? "Ej angivet" : yearModel;
+            return $"{registrationNumber}\t{vehicleType}\t{manufacturer}\t{model}\t{yearDisplay}";
+        }
+
+        public string ToFormattedString()
+        {
+            string yearDisplay = string.IsNullOrEmpty(yearModel) ? "Ej angivet" : yearModel;
+            return $"Reg: {registrationNumber} | Typ: {vehicleType} | Tillverkare: {manufacturer} | Modell: {model} | Årsmodell: {yearDisplay}";
         }
     }
 }
