@@ -1,0 +1,137 @@
+﻿using PRG_MAUI_Car_Register.veiwmodel.Model;
+
+namespace PRG_MAUI_Car_Register
+{
+    public partial class MainPage : ContentPage
+    {
+        List<Vehicle> vehicleList = new List<Vehicle>();
+
+        public MainPage()
+        {
+            InitializeComponent();
+            pickerType.SelectedIndex = 0;
+        }
+
+        private void OnRegisterClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                Vehicle vehicle;
+                var selectedType = (Vehicle.Type)pickerType.SelectedIndex;
+
+
+                switch (selectedType)
+                {
+                    case Vehicle.Type.Bil:
+                        vehicle = new Car(selectedType);
+                        break;
+                    case Vehicle.Type.MC:
+                        vehicle = new Motorcycle(selectedType);
+                        break;
+                    case Vehicle.Type.Lastbil:
+                        vehicle = new Truck(selectedType);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid vehicle type");
+                }
+
+                AddVehicleToList(vehicle);
+            }
+            catch (ArgumentException ex)
+            {
+                DisplayAlert("Fel", ex.Message, "OK");
+            }
+        }
+        private void AddVehicleToList(Vehicle vehicle)
+        {
+            vehicleList.Add(vehicle);
+            listViewVehicles.ItemsSource = null;
+            listViewVehicles.ItemsSource = vehicleList;
+
+            entryRegistrationNumber.Text = string.Empty;
+            entryManufacturer.Text = string.Empty;
+            entryModel.Text = string.Empty;
+            entryYear.Text = string.Empty;
+        }
+
+
+        private void OnRadioCheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (e.Value != true) return;
+
+            // Skapa en filtrerad lista baserat på vilken radioknapp som är vald
+            List<Vehicle> filteredList;
+
+            if (radioCar.IsChecked)
+            {
+                filteredList = vehicleList.Where(v => v.VehicleType == Vehicle.Type.Bil).ToList();
+            }
+            else if (radioMC.IsChecked)
+            {
+                filteredList = vehicleList.Where(v => v.VehicleType == Vehicle.Type.MC).ToList();
+            }
+            else if (radioTruck.IsChecked)
+            {
+                filteredList = vehicleList.Where(v => v.VehicleType == Vehicle.Type.Lastbil).ToList();
+            }
+            else
+            {
+                // Om "Alla" är vald, visa hela listan
+                filteredList = vehicleList;
+            }
+
+            listViewVehicles.ItemsSource = filteredList;
+        }
+
+        private void OnSearchClicked(object sender, EventArgs e)
+        {
+            string searchTerm = entrySearchRegistrationNumber.Text?.ToLower();
+
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                entrySearchRegistrationNumber.Text = "Ange ett registreringsnummer för att söka.";
+                return;
+            }
+            else
+            {
+                string searchValue = entrySearchRegistrationNumber.Text;
+                foreach (var car in vehicleList)
+                {
+                    if (car.RegistrationNumber == searchValue)
+                    {
+                        DisplayAlert("Fordon hittat", message: vehicleList.ToString(), "OK");
+                        return;
+                    }
+                }
+            }
+
+            var foundVehicle = vehicleList.FirstOrDefault(v => v.RegistrationNumber?.ToLower() == searchTerm);
+
+            if (foundVehicle != null)
+            {
+                labelSearchResult.Text = $"Fordon hittat:\n" +
+                                         $"Registreringsnummer: {foundVehicle.RegistrationNumber}\n" +
+                                         $"Tillverkare: {foundVehicle.Manufacturer}\n" +
+                                         $"Modell: {foundVehicle.Model}\n" +
+                                         $"Typ: {foundVehicle.VehicleType}";
+            }
+            else
+            {
+                labelSearchResult.Text = "Inget fordon hittades med det registreringsnumret.";
+            }
+        }
+        private void OnShowListChecked(object sender, EventArgs e)
+        {
+            if (checkBoxList.IsChecked == false)
+            {
+                listViewVehicles.IsVisible = false;
+            }
+            else
+            {
+                listViewVehicles.IsVisible = true;
+            }
+
+        }
+
+    }
+}
