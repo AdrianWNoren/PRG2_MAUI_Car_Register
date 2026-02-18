@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using PRG_MAUI_Car_Register.Services;
+using PRG_MAUI_Car_Register.ViewModel;
+
+
 //using Android.OS;
 //using Android.Views; // Behövs för SetStatusBarColor
 
@@ -24,6 +28,10 @@ namespace PRG_MAUI_Car_Register
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+           builder.Services.AddSingleton<IVehicleStorageService, JsonVehicleStorageService>();
+            builder.Services.AddSingleton<MainPageViewModel>();
+            builder.Services.AddSingleton<MainPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();

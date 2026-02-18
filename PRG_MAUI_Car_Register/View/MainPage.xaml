@@ -10,9 +10,6 @@
         <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
     </ContentPage.Resources>
 
-    <ContentPage.BindingContext>
-        <viewmodel:MainPageViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="10">

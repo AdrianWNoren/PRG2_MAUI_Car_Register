@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
+using PRG_MAUI_Car_Register.Services;  
 
 namespace PRG_MAUI_Car_Register.ViewModel
 {
     public class MainPageViewModel : BaseViewModel
     {
+        private readonly IVehicleStorageService _storage;
         private ObservableCollection<Vehicle> _vehicles;
         private ObservableCollection<Vehicle> _filteredVehicles;
         private string _registrationNumber;
@@ -17,16 +19,20 @@ namespace PRG_MAUI_Car_Register.ViewModel
         private string _searchResult;
         private string _selectedFilter = "All";
 
-        public MainPageViewModel()
+
+        public MainPageViewModel(IVehicleStorageService storage)
         {
+            _storage = storage;
             _vehicles = new ObservableCollection<Vehicle>();
             _filteredVehicles = new ObservableCollection<Vehicle>();
             SelectedType = 0;
 
             RegisterCommand = new Command(ExecuteRegisterCommand);
             SearchCommand = new Command(ExecuteSearchCommand);
-        }
 
+     
+            LoadAsync();
+        }
 
         public ObservableCollection<Vehicle> Vehicles
         {
@@ -94,12 +100,37 @@ namespace PRG_MAUI_Car_Register.ViewModel
             }
         }
 
-
         public ICommand RegisterCommand { get; }
         public ICommand SearchCommand { get; }
 
+        private async void LoadAsync()
+        {
+            try
+            {
+                var vehicles = await _storage.LoadAsync();
+                Vehicles = new ObservableCollection<Vehicle>(vehicles);
+                UpdateFilteredVehicles();
+            }
+            catch (Exception ex)
+            {
+                ShowAlert("Laddningsfel", $"Kunde inte ladda fordon: {ex.Message}");
+            }
+        }
 
-        private void ExecuteRegisterCommand()
+
+        private async void SaveAsync()
+        {
+            try
+            {
+                await _storage.SaveAsync(Vehicles);
+            }
+            catch (Exception ex)
+            {
+                ShowAlert("Sparfel", $"Kunde inte spara fordon: {ex.Message}");
+            }
+        }
+
+        private async void ExecuteRegisterCommand()
         {
             try
             {
@@ -123,6 +154,10 @@ namespace PRG_MAUI_Car_Register.ViewModel
                 Vehicles.Add(vehicle);
                 UpdateFilteredVehicles();
                 ClearTextFields();
+
+ 
+                SaveAsync();
+
                 ShowAlert("Lyckades", "Fordon registrerat!");
             }
             catch (ArgumentException ex)
@@ -173,7 +208,6 @@ namespace PRG_MAUI_Car_Register.ViewModel
 
             FilteredVehicles = new ObservableCollection<Vehicle>(filtered);
         }
-
 
         private void ClearTextFields()
         {

@@ -1,27 +1,32 @@
-﻿namespace PRG_MAUI_Car_Register
+﻿using PRG_MAUI_Car_Register.ViewModel;
+using Microsoft.Maui.Controls;
+
+namespace PRG_MAUI_Car_Register
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        public MainPage(MainPageViewModel viewModel)
         {
             InitializeComponent();
-        }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
+            // Sätt BindingContext här istället för i XAML
+            BindingContext = viewModel;
 
-            MessagingCenter.Subscribe<ViewModel.MainPageViewModel, ViewModel.AlertMessage>(
-                this, "ShowAlert", async (sender, message) =>
+            // Prenumerera på alerts
+            MessagingCenter.Subscribe<MainPageViewModel, AlertMessage>(
+                this,
+                "ShowAlert",
+                async (sender, message) =>
                 {
                     await DisplayAlert(message.Title, message.Message, "OK");
                 });
         }
 
+        // Glöm inte att avregistrera vid navigering
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
-            MessagingCenter.Unsubscribe<ViewModel.MainPageViewModel, ViewModel.AlertMessage>(this, "ShowAlert");
+            MessagingCenter.Unsubscribe<MainPageViewModel, AlertMessage>(this, "ShowAlert");
         }
     }
 }
